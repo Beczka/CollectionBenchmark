@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
 
@@ -47,12 +48,36 @@ namespace CollectionBenchmark
             {
                 collection[i] = new DummyModel();
             }
+
+            myPool.Return(collection);
         }
 
         [Benchmark]
         public void List()
         {
-            var collection = new List<DummyModel>();
+            var collection = new List<DummyModel>(Size);
+
+            for (int i = 0; i < Size; i++)
+            {
+                collection.Add(new DummyModel());
+            }
+        }
+
+        [Benchmark]
+        public void Dictionary()
+        {
+            var collection = new Dictionary<int, DummyModel>(Size);
+
+            for (int i = 0; i < Size; i++)
+            {
+                collection.Add(i, new DummyModel());
+            }
+        }
+
+        [Benchmark]
+        public void HashSet()
+        {
+            var collection = new HashSet<DummyModel>(Size);
 
             for (int i = 0; i < Size; i++)
             {
@@ -60,5 +85,4 @@ namespace CollectionBenchmark
             }
         }
     }
-
 }
