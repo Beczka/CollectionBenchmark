@@ -19,6 +19,7 @@ namespace CollectionBenchmark
     {
     }
 
+    [MemoryDiagnoser]
     public class Test
     {
         [Params(100, 1000, 10000)]
