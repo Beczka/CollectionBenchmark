@@ -28,9 +28,8 @@ namespace CollectionBenchmark
     [Config(typeof(ForceGcCollectionsConfig))]
     public class Test
     {
-        [Params(100, 1000, 10000, 100000)]
+        [Params(100, 1000)]
         public int Size { get; set; }
-
 
         [Benchmark]
         public void Array_RefType()
@@ -68,7 +67,6 @@ namespace CollectionBenchmark
             myPool.Return(collection);
         }
 
-
         [Benchmark]
         public void ArrayPool_ValueType()
         {
@@ -82,7 +80,6 @@ namespace CollectionBenchmark
 
             myPool.Return(collection);
         }
-
 
         [Benchmark]
         public void List_RefType()
@@ -127,7 +124,6 @@ namespace CollectionBenchmark
                 collection.AddFirst(i);
             }
         }
-
 
         [Benchmark]
         public void Dictionary_RefType()
@@ -195,7 +191,6 @@ namespace CollectionBenchmark
             }
         }
 
-
         [Benchmark]
         public void Stack_RefType()
         {
@@ -217,7 +212,6 @@ namespace CollectionBenchmark
                 collection.Push(i);
             }
         }
-
 
         [Benchmark]
         public void ObservableCollection_RefType()
