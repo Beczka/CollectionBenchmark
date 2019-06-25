@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
+using System.Threading;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
@@ -23,10 +25,10 @@ namespace CollectionBenchmark
     }
 
     [MemoryDiagnoser]
-    [Config(typeof(DontForceGcCollectionsConfig))]
+    [Config(typeof(ForceGcCollectionsConfig))]
     public class Test
     {
-        [Params(100, 1000, 10000)]
+        [Params(100, 1000, 10000, 100000)]
         public int Size { get; set; }
 
 
@@ -63,6 +65,17 @@ namespace CollectionBenchmark
             for (int i = 0; i < Size; i++)
             {
                 collection.Add(new DummyModel());
+            }
+        }
+
+        [Benchmark]
+        public void LinkedList()
+        {
+            var collection = new LinkedList<DummyModel>();
+
+            for (int i = 0; i < Size; i++)
+            {
+                collection.AddFirst(new DummyModel());
             }
         }
 
@@ -110,11 +123,83 @@ namespace CollectionBenchmark
                 collection.Push(new DummyModel());
             }
         }
+
+
+        [Benchmark]
+        public void ObservableCollection()
+        {
+            var collection = new ObservableCollection<DummyModel>();
+
+            for (int i = 0; i < Size; i++)
+            {
+                collection.Add(new DummyModel());
+            }
+        }
+
+        [Benchmark]
+        public void ImmutableDictionary()
+        {
+            var builder = System.Collections.Immutable.ImmutableDictionary.Create<int, DummyModel>().ToBuilder();
+
+            for (int i = 0; i < Size; i++)
+            {
+                builder.Add(i ,new DummyModel());
+            }
+
+            var collection = builder.ToImmutable();
+        }
+
+        [Benchmark]
+        public void ImmutableDictionaryWithoutBuilder()
+        {
+            var collection = System.Collections.Immutable.ImmutableDictionary.Create<int, DummyModel>();
+            for (int i = 0; i < Size; i++)
+            {
+                collection.Add(i, new DummyModel());
+            }
+
+        }
+
+        [Benchmark]
+        public void ImmutableList()
+        {
+            var builder = System.Collections.Immutable.ImmutableList.Create<DummyModel>().ToBuilder();
+
+            for (int i = 0; i < Size; i++)
+            {
+                builder.Add(new DummyModel());
+            }
+
+            var collection = builder.ToImmutable();
+        }
+
+
+        [Benchmark]
+        public void ImmutableListWithoutBuilder()
+        {
+            var collection = System.Collections.Immutable.ImmutableList.Create<DummyModel>();
+            for (int i = 0; i < Size; i++)
+            {
+                collection.Add(new DummyModel());
+            }
+
+        }
+
+        //[Benchmark]
+        //public void ImmutableInterlocked()
+        //{
+        //    var collection = System.Collections.Immutable.ImmutableInterlocked..Create<DummyModel>();
+
+        //    for (int i = 0; i < Size; i++)
+        //    {
+        //        collection.Add(new DummyModel());
+        //    }
+        //}
     }
 
-    public class DontForceGcCollectionsConfig : ManualConfig
+    public class ForceGcCollectionsConfig : ManualConfig
     {
-        public DontForceGcCollectionsConfig()
+        public ForceGcCollectionsConfig()
         {
             Add(Job.Default
                 .With(new GcMode(){
