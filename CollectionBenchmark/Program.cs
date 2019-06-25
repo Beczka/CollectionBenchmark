@@ -3,6 +3,8 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
 
 namespace CollectionBenchmark
@@ -21,6 +23,7 @@ namespace CollectionBenchmark
     }
 
     [MemoryDiagnoser]
+    [Config(typeof(DontForceGcCollectionsConfig))]
     public class Test
     {
         [Params(100, 1000, 10000)]
@@ -83,6 +86,40 @@ namespace CollectionBenchmark
             {
                 collection.Add(new DummyModel());
             }
+        }
+
+        [Benchmark]
+        public void Queue()
+        {
+            var collection = new Queue<DummyModel>(Size);
+
+            for (int i = 0; i < Size; i++)
+            {
+                collection.Enqueue(new DummyModel());
+            }
+        }
+
+
+        [Benchmark]
+        public void Stack()
+        {
+            var collection = new Stack<DummyModel>(Size);
+
+            for (int i = 0; i < Size; i++)
+            {
+                collection.Push(new DummyModel());
+            }
+        }
+    }
+
+    public class DontForceGcCollectionsConfig : ManualConfig
+    {
+        public DontForceGcCollectionsConfig()
+        {
+            Add(Job.Default
+                .With(new GcMode(){
+                    Force = true
+                }));
         }
     }
 }
