@@ -33,7 +33,7 @@ namespace CollectionBenchmark
 
 
         [Benchmark]
-        public void Array()
+        public void Array_RefType()
         {
             var collection = new DummyModel[Size];
 
@@ -44,7 +44,18 @@ namespace CollectionBenchmark
         }
 
         [Benchmark]
-        public void ArrayPool()
+        public void Array_ValueType()
+        {
+            var collection = new int[Size];
+
+            for (int i = 0; i < Size; i++)
+            {
+                collection[i] = i;
+            }
+        }
+
+        [Benchmark]
+        public void ArrayPool_RefType()
         {
             var myPool = ArrayPool<DummyModel>.Shared;
             var collection = myPool.Rent(Size);
@@ -57,8 +68,24 @@ namespace CollectionBenchmark
             myPool.Return(collection);
         }
 
+
         [Benchmark]
-        public void List()
+        public void ArrayPool_ValueType()
+        {
+            var myPool = ArrayPool<int>.Shared;
+            var collection = myPool.Rent(Size);
+
+            for (int i = 0; i < Size; i++)
+            {
+                collection[i] = i;
+            }
+
+            myPool.Return(collection);
+        }
+
+
+        [Benchmark]
+        public void List_RefType()
         {
             var collection = new List<DummyModel>(Size);
 
@@ -69,7 +96,18 @@ namespace CollectionBenchmark
         }
 
         [Benchmark]
-        public void LinkedList()
+        public void List_ValueType()
+        {
+            var collection = new List<int>(Size);
+
+            for (int i = 0; i < Size; i++)
+            {
+                collection.Add(i);
+            }
+        }
+
+        [Benchmark]
+        public void LinkedList_RefType()
         {
             var collection = new LinkedList<DummyModel>();
 
@@ -80,7 +118,19 @@ namespace CollectionBenchmark
         }
 
         [Benchmark]
-        public void Dictionary()
+        public void LinkedList_ValueType()
+        {
+            var collection = new LinkedList<int>();
+
+            for (int i = 0; i < Size; i++)
+            {
+                collection.AddFirst(i);
+            }
+        }
+
+
+        [Benchmark]
+        public void Dictionary_RefType()
         {
             var collection = new Dictionary<int, DummyModel>(Size);
 
@@ -91,7 +141,18 @@ namespace CollectionBenchmark
         }
 
         [Benchmark]
-        public void HashSet()
+        public void Dictionary_ValueType()
+        {
+            var collection = new Dictionary<int, int>(Size);
+
+            for (int i = 0; i < Size; i++)
+            {
+                collection.Add(i, i);
+            }
+        }
+
+        [Benchmark]
+        public void HashSet_RefType()
         {
             var collection = new HashSet<DummyModel>(Size);
 
@@ -102,7 +163,18 @@ namespace CollectionBenchmark
         }
 
         [Benchmark]
-        public void Queue()
+        public void HashSet_ValueType()
+        {
+            var collection = new HashSet<int>(Size);
+
+            for (int i = 0; i < Size; i++)
+            {
+                collection.Add(i);
+            }
+        }
+
+        [Benchmark]
+        public void Queue_RefType()
         {
             var collection = new Queue<DummyModel>(Size);
 
@@ -112,9 +184,20 @@ namespace CollectionBenchmark
             }
         }
 
+        [Benchmark]
+        public void Queue_ValueType()
+        {
+            var collection = new Queue<int>(Size);
+
+            for (int i = 0; i < Size; i++)
+            {
+                collection.Enqueue(i);
+            }
+        }
+
 
         [Benchmark]
-        public void Stack()
+        public void Stack_RefType()
         {
             var collection = new Stack<DummyModel>(Size);
 
@@ -124,9 +207,20 @@ namespace CollectionBenchmark
             }
         }
 
+        [Benchmark]
+        public void Stack_ValueType()
+        {
+            var collection = new Stack<int>(Size);
+
+            for (int i = 0; i < Size; i++)
+            {
+                collection.Push(i);
+            }
+        }
+
 
         [Benchmark]
-        public void ObservableCollection()
+        public void ObservableCollection_RefType()
         {
             var collection = new ObservableCollection<DummyModel>();
 
@@ -137,53 +231,64 @@ namespace CollectionBenchmark
         }
 
         [Benchmark]
-        public void ImmutableDictionary()
+        public void ObservableCollection_ValueType()
         {
-            var builder = System.Collections.Immutable.ImmutableDictionary.Create<int, DummyModel>().ToBuilder();
+            var collection = new ObservableCollection<int>();
 
             for (int i = 0; i < Size; i++)
             {
-                builder.Add(i ,new DummyModel());
+                collection.Add(i);
             }
-
-            var collection = builder.ToImmutable();
         }
 
-        [Benchmark]
-        public void ImmutableDictionaryWithoutBuilder()
-        {
-            var collection = System.Collections.Immutable.ImmutableDictionary.Create<int, DummyModel>();
-            for (int i = 0; i < Size; i++)
-            {
-                collection.Add(i, new DummyModel());
-            }
+        //[Benchmark]
+        //public void ImmutableDictionary()
+        //{
+        //    var builder = System.Collections.Immutable.ImmutableDictionary.Create<int, DummyModel>().ToBuilder();
 
-        }
+        //    for (int i = 0; i < Size; i++)
+        //    {
+        //        builder.Add(i ,new DummyModel());
+        //    }
 
-        [Benchmark]
-        public void ImmutableList()
-        {
-            var builder = System.Collections.Immutable.ImmutableList.Create<DummyModel>().ToBuilder();
+        //    var collection = builder.ToImmutable();
+        //}
 
-            for (int i = 0; i < Size; i++)
-            {
-                builder.Add(new DummyModel());
-            }
+        //[Benchmark]
+        //public void ImmutableDictionaryWithoutBuilder()
+        //{
+        //    var collection = System.Collections.Immutable.ImmutableDictionary.Create<int, DummyModel>();
+        //    for (int i = 0; i < Size; i++)
+        //    {
+        //        collection.Add(i, new DummyModel());
+        //    }
 
-            var collection = builder.ToImmutable();
-        }
+        //}
+
+        //[Benchmark]
+        //public void ImmutableList()
+        //{
+        //    var builder = System.Collections.Immutable.ImmutableList.Create<DummyModel>().ToBuilder();
+
+        //    for (int i = 0; i < Size; i++)
+        //    {
+        //        builder.Add(new DummyModel());
+        //    }
+
+        //    var collection = builder.ToImmutable();
+        //}
 
 
-        [Benchmark]
-        public void ImmutableListWithoutBuilder()
-        {
-            var collection = System.Collections.Immutable.ImmutableList.Create<DummyModel>();
-            for (int i = 0; i < Size; i++)
-            {
-                collection.Add(new DummyModel());
-            }
+        //[Benchmark]
+        //public void ImmutableListWithoutBuilder()
+        //{
+        //    var collection = System.Collections.Immutable.ImmutableList.Create<DummyModel>();
+        //    for (int i = 0; i < Size; i++)
+        //    {
+        //        collection.Add(new DummyModel());
+        //    }
 
-        }
+        //}
 
         //[Benchmark]
         //public void ImmutableInterlocked()
